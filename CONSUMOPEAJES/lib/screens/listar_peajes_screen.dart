@@ -87,6 +87,26 @@ class _ListarPeajesScreenState extends State<ListarPeajesScreen> {
     }
   }
 
+  Future<void> eliminarPeaje(int id) async {
+    final url = Uri.parse('http://jpnet08-001-site1.htempurl.com/SENA/Peaje/$id');
+    try {
+      final response = await http.delete(url, headers: {
+        'User-Agent': 'your-user-agent',
+        'Authorization': 'Basic ' + base64Encode(utf8.encode('11178839:60-dayfreetrial')),
+      });
+
+      if (response.statusCode == 204) {
+        setState(() {
+          peajes.removeWhere((peaje) => peaje.id == id);
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al eliminar el peaje: ${response.statusCode}')));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Excepción al eliminar el peaje: $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,6 +143,53 @@ class _ListarPeajesScreenState extends State<ListarPeajesScreen> {
                               Text('Placa: ${peajes[index].placa}'),
                               Text('Fecha de Registro: ${peajes[index].fechaRegistro.toLocal()}'),
                               Text('Valor: \$${peajes[index].valor}'),
+                            ],
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.edit, color: Colors.blue),
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/editar_peaje',
+                                    arguments: peajes[index],
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete, color: Colors.red),
+                                onPressed: () async {
+                                  bool confirm = await showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('Confirmar eliminación'),
+                                        content: Text('¿Estás seguro de que quieres eliminar este peaje?'),
+                                        actions: [
+                                          TextButton(
+                                            child: Text('Cancelar'),
+                                            onPressed: () {
+                                              Navigator.of(context).pop(false);
+                                            },
+                                          ),
+                                          TextButton(
+                                            child: Text('Eliminar'),
+                                            onPressed: () {
+                                              Navigator.of(context).pop(true);
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+
+                                  if (confirm) {
+                                    eliminarPeaje(peajes[index].id);
+                                  }
+                                },
+                              ),
                             ],
                           ),
                         ),

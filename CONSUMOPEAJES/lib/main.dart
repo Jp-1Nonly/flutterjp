@@ -1,24 +1,26 @@
-import 'package:flutter/material.dart';
-import 'package:consumodeapis/screens/menu_screen.dart';
-import 'package:consumodeapis/screens/listar_peajes_screen.dart';
 import 'package:consumodeapis/screens/agregar_peaje_screen.dart';
-
+import 'package:consumodeapis/screens/editar_peaje_screen.dart';
+import 'package:consumodeapis/screens/listar_peajes_screen.dart';
+import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MenuApp());
+  runApp(MyApp());
 }
 
-class MenuApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+      title: 'Tu App de Peajes',
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
       initialRoute: '/',
       routes: {
-        '/': (context) => MenuScreen(),
+        '/': (context) => ListarPeajesScreen(),
         '/listar_peajes': (context) => ListarPeajesScreen(),
         '/agregar_peaje': (context) => AgregarPeajeScreen(),
-        
+        '/editar_peaje': (context) => EditarPeajeScreen(),
       },
     );
   }
